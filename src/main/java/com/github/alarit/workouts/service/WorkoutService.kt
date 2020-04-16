@@ -22,6 +22,7 @@ class WorkoutService(private val workoutRepository: WorkoutRepository) {
             return Optional.empty()
         }
 
+        workout.id = id
         return Optional.of(save(workout))
     }
 

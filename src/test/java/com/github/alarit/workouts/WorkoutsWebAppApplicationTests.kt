@@ -27,7 +27,7 @@ class IntegrationTests(@Autowired val restTemplate: TestRestTemplate) {
     @Test
     @Order(1)
     fun `Create a workout`() {
-        val workout = Workout(55L, 1, LocalDate.now(), 100)
+        val workout = Workout(1L, 1, LocalDate.now(), 100)
         val headers = HttpHeaders()
         headers["X-COM-PERSIST"] = "true"
         val request: HttpEntity<Workout> = HttpEntity<Workout>(workout, headers)
@@ -38,7 +38,7 @@ class IntegrationTests(@Autowired val restTemplate: TestRestTemplate) {
     @Test
     @Order(2)
     fun `Update a workout`() {
-        val workout = Workout(55L, 1, LocalDate.now(), 50)
+        val workout = Workout(1L, 1, LocalDate.now(), 50)
         val headers = HttpHeaders()
         headers["X-COM-PERSIST"] = "true"
         val request: HttpEntity<Workout> = HttpEntity<Workout>(workout, headers)
@@ -51,7 +51,7 @@ class IntegrationTests(@Autowired val restTemplate: TestRestTemplate) {
     fun `Find all workouts`() {
         val response = restTemplate.getForEntity<String>("/api/workouts/")
         assertEquals(response.statusCode, HttpStatus.OK)
-        assertThat(response.body).contains("\"reps\":100")
+        assertThat(response.body).contains("\"reps\":50")
     }
 
     @Test
@@ -59,7 +59,7 @@ class IntegrationTests(@Autowired val restTemplate: TestRestTemplate) {
     fun `Find all workouts by type`() {
         val response = restTemplate.getForEntity<String>("/api/workouts/types/1")
         assertEquals(response.statusCode, HttpStatus.OK)
-        assertThat(response.body).contains("\"reps\":100")
+        assertThat(response.body).contains("\"reps\":50")
     }
 
 }
