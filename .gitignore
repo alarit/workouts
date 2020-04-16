@@ -130,3 +130,5 @@ buildNumber.properties
 
 # End of https://www.gitignore.io/api/maven,kotlin,intellij
 /.idea/
+/HELP.md
+/workouts.iml

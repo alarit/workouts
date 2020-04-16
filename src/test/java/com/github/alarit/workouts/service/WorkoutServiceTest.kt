@@ -10,6 +10,7 @@ import java.util.*
 
 internal class WorkoutServiceTest{
 
+
     private val repo = Mockito.mock(WorkoutRepository::class.java)
     private val service = WorkoutService(repo)
     private val workoutMock = Workout(55L)
@@ -17,20 +18,21 @@ internal class WorkoutServiceTest{
     @Test
     fun save() {
         Mockito.`when`(repo.save(any(Workout::class.java))).thenReturn(workoutMock)
-        val result = service.save(workoutMock).block()
-        assertEquals(result?.id, workoutMock.id)
+        val result = service.save(workoutMock)
+        assertEquals(result.id, workoutMock.id)
     }
 
     @Test
     fun update() {
         Mockito.`when`(repo.findById(any(Long::class.java))).thenReturn(Optional.empty())
-        var result = service.update(workoutMock.id, workoutMock).block()
-        assertNull(result)
+        var result = service.update(workoutMock.id, workoutMock)
+        assertFalse(result.isPresent)
 
         Mockito.`when`(repo.findById(any(Long::class.java))).thenReturn(Optional.of(workoutMock))
         Mockito.`when`(repo.save(any(Workout::class.java))).thenReturn(workoutMock)
-        result = service.save(workoutMock).block()
-        assertEquals(result?.id, workoutMock.id)
+        result = service.update(workoutMock.id, workoutMock)
+        assertTrue(result.isPresent)
+        assertEquals(result.get().id, workoutMock.id)
     }
 
     @Test
@@ -38,11 +40,8 @@ internal class WorkoutServiceTest{
         val workoutMocks = listOf(Workout(55L),Workout(155L))
         Mockito.`when`(repo.findAll()).thenReturn(workoutMocks)
 
-        val result = service.findAll().collectList().block() ?: emptyList()
-        assertEquals(result.size, workoutMocks.size)
-        for((index, mock) in result.withIndex()) {
-            assertEquals(mock, workoutMocks[index])
-        }
+        val result = service.findAll()
+        assertEquals(result, workoutMocks)
     }
 
     @Test
@@ -50,15 +49,9 @@ internal class WorkoutServiceTest{
         val workoutMocks = listOf(Workout(55L),Workout(155L))
         val workoutType = 1L
 
-        var result = service.findByType(-1L).collectList().block()
-        assertTrue(result.isEmpty())
-
         Mockito.`when`(repo.findWorkoutsByTypeOrderByDateDesc(workoutType)).thenReturn(workoutMocks)
-        result = service.findByType(workoutType).collectList().block() ?: emptyList()
-        assertEquals(result.size, workoutMocks.size)
-        for((index, mock) in result.withIndex()) {
-            assertEquals(mock, workoutMocks[index])
-        }
+        val result = service.findByType(workoutType)
+        assertEquals(result, workoutMocks)
     }
 
 }
