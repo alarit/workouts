@@ -17,7 +17,7 @@ class WorkoutController(private val workoutService: WorkoutService) {
     fun save(@RequestBody workout: Workout): ResponseEntity<Workout> {
         log.info("saving workout")
         val savedWorkout = workoutService.save(workout)
-        return ResponseEntity.created(URI.create("/api/workouts/$savedWorkout.id")).body(savedWorkout)
+        return ResponseEntity.created(URI.create("/api/workouts/${savedWorkout.id}")).body(savedWorkout)
     }
 
     @PutMapping("/{id}")
@@ -37,7 +37,7 @@ class WorkoutController(private val workoutService: WorkoutService) {
     }
 
     @GetMapping("/types/{type}")
-    fun findByName(@PathVariable type: Long): ResponseEntity<Iterable<Workout>> {
+    fun findByType(@PathVariable type: Long): ResponseEntity<Iterable<Workout>> {
         log.info("Finding all {}", type)
         return ResponseEntity.ok().body(workoutService.findByType(type))
     }

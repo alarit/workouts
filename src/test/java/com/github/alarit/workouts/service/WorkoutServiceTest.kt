@@ -24,11 +24,13 @@ internal class WorkoutServiceTest{
 
     @Test
     fun update() {
-        Mockito.`when`(repo.findById(any(Long::class.java))).thenReturn(Optional.empty())
+        Mockito.`when`(repo.findById(any(Long::class.java)))
+                .thenReturn(Optional.empty())
+                .thenReturn(Optional.of(workoutMock))
+
         var result = service.update(workoutMock.id, workoutMock)
         assertFalse(result.isPresent)
 
-        Mockito.`when`(repo.findById(any(Long::class.java))).thenReturn(Optional.of(workoutMock))
         Mockito.`when`(repo.save(any(Workout::class.java))).thenReturn(workoutMock)
         result = service.update(workoutMock.id, workoutMock)
         assertTrue(result.isPresent)
@@ -52,6 +54,19 @@ internal class WorkoutServiceTest{
         Mockito.`when`(repo.findWorkoutsByTypeOrderByDateDesc(workoutType)).thenReturn(workoutMocks)
         val result = service.findByType(workoutType)
         assertEquals(result, workoutMocks)
+    }
+
+    @Test
+    fun delete() {
+        Mockito.`when`(repo.findById(any(Long::class.java)))
+                .thenReturn(Optional.empty())
+                .thenReturn(Optional.of(workoutMock))
+
+        var result = service.delete(workoutMock.id)
+        assertFalse(result)
+
+        result = service.delete(workoutMock.id)
+        assertTrue(result)
     }
 
 }

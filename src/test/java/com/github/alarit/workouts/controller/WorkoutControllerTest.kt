@@ -6,18 +6,16 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
 import com.github.alarit.workouts.model.Workout
 import com.github.alarit.workouts.service.WorkoutService
-import junit.framework.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
@@ -38,16 +36,23 @@ internal class WorkoutControllerTest {
     private val apiUrl = "/api/workouts"
     private val workoutMocks = listOf(Workout(55L), Workout(155L))
 
-    /*@Test
+    @Test
     fun save() {
-    }*/
+        val workout = workoutMocks[0]
+        Mockito.`when`(service.save(workout)).thenReturn(workout)
+
+        mvc.perform(
+                MockMvcRequestBuilders.post("$apiUrl/")
+                        .content(asJsonString(workout))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated)
+    }
 
     @Test
     fun update() {
         val workout = workoutMocks[0]
         Mockito.`when`(service.update(55, workout)).thenReturn(Optional.empty())
-
-        println(asJsonString(workout))
 
         mvc.perform(
                 MockMvcRequestBuilders.put("$apiUrl/{id}", workout.id)
@@ -70,20 +75,36 @@ internal class WorkoutControllerTest {
     fun findAll() {
         Mockito.`when`(service.findAll()).thenReturn(workoutMocks)
 
-        val result = mvc.get("$apiUrl/")
-                .andReturn()
-
-        assertEquals(result.response.status, HttpStatus.OK.value())
-
+        mvc.perform(
+                MockMvcRequestBuilders.get("$apiUrl/"))
+                .andExpect(status().isOk)
     }
 
-    /*@Test
-    fun findByName() {
+    @Test
+    fun findByType() {
+        val type = 55L
+        Mockito.`when`(service.findByType(type)).thenReturn(workoutMocks)
+
+        mvc.perform(
+                MockMvcRequestBuilders.get("$apiUrl/types/{type}", type))
+                .andExpect(status().isOk)
     }
 
     @Test
     fun delete() {
-    }*/
+        Mockito.`when`(service.delete(anyLong()))
+                .thenReturn(false)
+                .thenReturn(true)
+
+
+        mvc.perform(
+                MockMvcRequestBuilders.delete("$apiUrl/{id}", 100))
+                .andExpect(status().isNotFound)
+
+        mvc.perform(
+                MockMvcRequestBuilders.delete("$apiUrl/{id}", 55))
+                .andExpect(status().isNoContent)
+    }
 
     private fun asJsonString(obj: Any): String {
         return try {

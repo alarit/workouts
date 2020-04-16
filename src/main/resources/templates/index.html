@@ -104,20 +104,20 @@
                 axios.get('api/workouts/types/' + this.workoutType)
                     .then((workouts) => {
                         this.workouts = workouts.data
-                    };)
+                    })
             },
             createWorkout() {
                 const _workout = {id: null, type: this.workoutType, date: new Date().toISOString().slice(0, 10)};
                 axios.post('api/workouts/', _workout)
                     .then(() => {
                         this.loadWorkouts()
-                    };)
+                    })
             },
             updateWorkouts(workout) {
                 axios.put('api/workouts/' + workout.id, workout)
                     .then(() => {
                         this.showSuccessMsg()
-                    };)
+                    })
             },
             deleteWorkout() {
 
@@ -126,7 +126,7 @@
                 this.showSuccess = true;
                 setTimeout(() => {
                     this.showSuccess = false
-                }, 5000;)
+                }, 5000)
             }
         }
     })
